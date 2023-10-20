@@ -15,9 +15,15 @@ app.get("/", (req,res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg);
-  });
+  socket.on('chat message', async (msg) => {
+    let result;
+    try{
+      result = await db.run('INSERT INTO messages (content) VALUES (?)', msg);
+    } catch (e) {
+      return;
+    }
+    io.emit('chat message', msg, result.lastID);
+  })
 });
 
 server.listen(3000, () => {
