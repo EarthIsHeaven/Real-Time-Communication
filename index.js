@@ -9,6 +9,7 @@ import { createAdapter, setupPrimary } from '@socket.io/cluster-adapter';
 
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import { log } from 'node:console';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 
@@ -21,7 +22,7 @@ if (cluster.isPrimary) {
   }
 
   setupPrimary();
-} else {
+} else { 
   const db = await open({
     filename: 'chat.db',
     driver: sqlite3.Database
@@ -47,6 +48,11 @@ if (cluster.isPrimary) {
   });
 
   io.on('connection', async (socket) => {
+    console.log('a user connected');
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+    });
+    
     socket.on('chat message', async (msg, clientOffset, callback) => {
       let result;
       try {
