@@ -21,44 +21,38 @@
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
-
     <script src="/socket.io/socket.io.js"></script>
-    
     <script>
-
       let counter = 0;
-
+  
       const socket = io({
-        auth: {
-          serverOffset : 0
-        },
         ackTimeout: 10000,
         retries: 3,
+        auth: {
+          serverOffset: 0
+        }
       });
-    
-    const form = document.getElementById('form');
-    const input = document.getElementById('input');
-    const message = document.getElementById('messages');
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault(); // Prevent the default form submission behavior
-      if(input.value){
-        // compute a unique offset
-        const clientOffset = `${socket.id}-${counter++}`;
-        socket.emit('chat message', input.value, clientOffset);
-        input.value = '';
-      }
-    });
-
-    socket.on('chat message', (msg, serverOffset) => {
-      const item = document.createElement('li');
-      item.textContent = msg;
-      messages.appendChild(item);
-      window.scrollTo(0, document.body.scrollHeight);
-      socket.auth.serverOffset = serverOffset;
-    })
-
+  
+      const form = document.getElementById('form');
+      const input = document.getElementById('input');
+      const messages = document.getElementById('messages');
+  
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (input.value) {
+          const clientOffset = `${socket.id}-${counter++}`;
+          socket.emit('chat message', input.value, clientOffset);
+          input.value = '';
+        }
+      });
+  
+      socket.on('chat message', (msg, serverOffset) => {
+        const item = document.createElement('li');
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+        socket.auth.serverOffset = serverOffset;
+      });
     </script>
-
   </body>
 </html>
