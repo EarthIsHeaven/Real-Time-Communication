@@ -15,6 +15,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 if (cluster.isPrimary) {
   const numCPUs = availableParallelism();
+  console.log(numCPUs);
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork({
       PORT: 3000 + i
@@ -48,9 +49,10 @@ if (cluster.isPrimary) {
   });
 
   io.on('connection', async (socket) => {
-    console.log('a user connected');
+
+    console.log(`Connected user ${process.env.PORT}`);
     socket.on('disconnect', () => {
-      console.log('user disconnected');
+      console.log(`Disconnected user ${process.env.PORT}`);
     });
     
     socket.on('chat message', async (msg, clientOffset, callback) => {
